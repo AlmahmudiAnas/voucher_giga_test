@@ -13,25 +13,25 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      // width: size.width * 0.2,
       height: size.height * 0.07,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade600,
-            spreadRadius: 1,
-            blurRadius: 7,
-            blurStyle: BlurStyle.solid,
+            color: Colors.grey.shade600.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: Offset(0, 3),
           ),
         ],
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Colors.blue,
-            Color.fromARGB(255, 0, 56, 102),
+            Colors.blue.shade700,
+            Color.fromARGB(255, 14, 117, 188),
           ],
+          stops: [0.2, 0.8],
         ),
       ),
       child: MaterialButton(

@@ -19,17 +19,21 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: size.height * 0.2),
-              Text(
-                'Login',
-                style: TextStyle(
-                  fontFamily: 'Cursive',
-                  fontSize: 70,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              SizedBox(height: size.height * 0.25),
+              Image.asset(
+                "images/logo-giga.png",
+                scale: 2,
               ),
-              SizedBox(height: size.height * 0.02),
+              // Text(
+              //   'Login',
+              //   style: TextStyle(
+              //     fontFamily: 'Cursive',
+              //     fontSize: 50,
+              //     fontWeight: FontWeight.bold,
+              //     color: Colors.white,
+              //   ),
+              // ),
+              SizedBox(height: size.height * 0.05),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: LoginForm(),

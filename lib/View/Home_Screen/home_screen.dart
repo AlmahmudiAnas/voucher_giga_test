@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:voucher_giga/My_Widgets/user_info_card.dart';
@@ -31,56 +33,64 @@ class _HomeScreenState extends State<HomeScreen> {
     final vouchers = voucherProvider.vouchers;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      //backgroundColor: Colors.blueAccent,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              SizedBox(height: size.height * 0.1),
-              UserInfoCard(),
-              SizedBox(height: size.height * 0.05),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: Text(
-                  'الباقات المتوفرة',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
+      backgroundColor: Colors.blueAccent,
+      body: Stack(
+        children: [
+          ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                width: size.width,
+                height: size.height,
+                color: Colors.grey.shade200.withOpacity(0.20),
               ),
-              Container(
-                height: size.height * 0.7,
-                color: Colors.white,
-                child: Container(
-                  height: size.height,
-                  width: size.width,
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+            ),
+          ),
+          Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                //SizedBox(height: size.height * 0.1),
+                UserInfoCard(),
+                SizedBox(height: size.height * 0.05),
+                Container(
+                  width: size.width * 0.8,
+                  height: size.height * 0.5,
+                  //color: Colors.white,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                      ),
+                      itemCount: vouchers.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        //print(vouchers[index].validity);
+                        return GestureDetector(
+                          child: VoucherItem(voucher: vouchers[index]),
+                          onTap: () {
+                            Provider.of<VoucherProvider>(context, listen: false)
+                                .voucherRequest
+                                .addEntries({
+                              MapEntry("voucher", vouchers[index].id),
+                            });
+                            Navigator.pushNamed(
+                                context, VoucherDetails.routeName);
+                          },
+                        );
+                      },
                     ),
-                    itemCount: vouchers.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      //print(vouchers[index].validity);
-                      return GestureDetector(
-                        child: VoucherItem(voucher: vouchers[index]),
-                        onTap: () {
-                          Provider.of<VoucherProvider>(context, listen: false)
-                              .voucherRequest
-                              .addEntries({
-                            MapEntry("voucher", vouchers[index].id),
-                          });
-                          Navigator.pushNamed(
-                              context, VoucherDetails.routeName);
-                        },
-                      );
-                    },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

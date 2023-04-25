@@ -9,7 +9,7 @@ class AuthProvider extends ChangeNotifier {
   bool isloading = false;
   Map<String, dynamic>? userCachData;
   late String _email;
-  late String _password;
+  late String _password = '';
   bool _isValid = false;
 
   late String _token;

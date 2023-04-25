@@ -11,24 +11,24 @@ class VoucherItem extends StatelessWidget {
     return Card(
       elevation: 5,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Text(
             voucher.name,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: 25,
             ),
           ),
           Text(
             "${voucher.cost}\$",
             style: TextStyle(
-              color: Colors.yellow,
+              color: Colors.blue,
               fontSize: 25,
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text("Time: ${voucher.validity}"),
+          // Text("Time: ${voucher.validity}"),
 
           // Text("Speed: ${voucher.downloadSpeed}"),
           // Text("Upload: ${voucher.uploadSpeed}"),
