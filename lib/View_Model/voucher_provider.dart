@@ -30,6 +30,15 @@ class VoucherProvider extends ChangeNotifier {
   List<Voucher> get vouchers => _vouchers;
   Map<String, dynamic> get voucherRequest => _voucherRequest;
   List<dynamic> get newVouchers => _newVouchers;
+  List colors = [
+    Colors.blue,
+    Colors.green,
+    Colors.red,
+    Colors.black,
+    Colors.accents,
+    Colors.amber,
+    Colors.teal,
+  ];
 
   Future<void> fetchVouchers(String token) async {
     try {

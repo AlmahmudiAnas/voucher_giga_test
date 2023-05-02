@@ -29,72 +29,123 @@ class _VoucherDetailsState extends State<VoucherDetails> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(30, 20, 30, 0),
-          child: Column(
-            children: [
-              Text('ادخل الكمية المراد سحبها'),
-              SizedBox(height: size.height * 0.02),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _voucherQuantity,
-                  decoration: InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    filled: false,
-                    label: Text('عدد البطاقات'),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(
-                        width: 3,
-                        style: BorderStyle.solid,
+      body: Stack(
+        children: [
+          Container(
+            width: size.width,
+            height: size.height,
+            child: Image.asset(
+              'images/giga2.png',
+              fit: BoxFit.fill,
+            ),
+          ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 30,
+                vertical: 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(height: size.height * 0.25),
+                  Text(
+                    'ادخل الكمية المراد سحبها',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.03),
+                  Center(
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Container(
+                        width: size.width * 0.3,
+                        child: TextField(
+                          style: TextStyle(
+                            fontFamily: 'Digistyle',
+                            //color: Colors.green,
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          keyboardType: TextInputType.number,
+                          controller: _voucherQuantity,
+                          decoration: InputDecoration(
+                            fillColor: Color.fromARGB(255, 196, 196, 196),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                width: 3,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  SizedBox(height: size.height * 0.02),
+                  // DropdownButton(
+                  //   hint: Text('اختر الطابعة'),
+                  //   onChanged: (device) =>
+                  //       context.read<VoucherProvider>().deviceSelected(device),
+                  //   value: context.watch<VoucherProvider>().selectedDevice,
+                  //   items: context
+                  //       .watch<VoucherProvider>()
+                  //       .devices
+                  //       .map((e) => DropdownMenuItem(
+                  //             child: Text(e.name!),
+                  //             value: e,
+                  //           ))
+                  //       .toList(),
+                  // ),
+                  SizedBox(height: size.height * 0.1),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomButton(
+                          text: 'تنفيد',
+                          onPressed: () async {
+                            // context.read<VoucherProvider>().newVouchers(
+                            //     "quantity", int.parse(_voucherQuantity.text));
+                            Provider.of<VoucherProvider>(context, listen: false)
+                                .voucherRequest
+                                .addEntries({
+                              MapEntry(
+                                  "quantity", int.parse(_voucherQuantity.text))
+                            });
+                            print(voucherProvider.voucherRequest);
+                            final box = await Hive.openBox('UserData');
+                            final currentUser = box.get('current_user');
+                            //print(currentUser.token);
+                            await context
+                                .read<VoucherProvider>()
+                                .newVouchersMethod(
+                                    voucherProvider.voucherRequest,
+                                    currentUser.token);
+                            // voucherProvider.printVoucher();
+                            context.read<VoucherProvider>().connectPrinter();
+                            //Navigator.pop(context);
+                          },
+                        ),
+                        CustomButton(
+                          text: 'رجوع',
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: size.height * 0.05),
-              // DropdownButton(
-              //   hint: Text('اختر الطابعة'),
-              //   onChanged: (device) =>
-              //       context.read<VoucherProvider>().deviceSelected(device),
-              //   value: context.watch<VoucherProvider>().selectedDevice,
-              //   items: context
-              //       .watch<VoucherProvider>()
-              //       .devices
-              //       .map((e) => DropdownMenuItem(
-              //             child: Text(e.name!),
-              //             value: e,
-              //           ))
-              //       .toList(),
-              // ),
-              SizedBox(height: size.height * 0.1),
-              CustomButton(
-                text: 'سحب بطاقات',
-                onPressed: () async {
-                  // context.read<VoucherProvider>().newVouchers(
-                  //     "quantity", int.parse(_voucherQuantity.text));
-                  Provider.of<VoucherProvider>(context, listen: false)
-                      .voucherRequest
-                      .addEntries({
-                    MapEntry("quantity", int.parse(_voucherQuantity.text))
-                  });
-                  print(voucherProvider.voucherRequest);
-                  final box = await Hive.openBox('UserData');
-                  final currentUser = box.get('current_user');
-                  //print(currentUser.token);
-                  await context.read<VoucherProvider>().newVouchersMethod(
-                      voucherProvider.voucherRequest, currentUser.token);
-                  // voucherProvider.printVoucher();
-                  context.read<VoucherProvider>().connectPrinter();
-                  //Navigator.pop(context);
-                },
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

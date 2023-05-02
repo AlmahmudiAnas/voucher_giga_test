@@ -18,10 +18,10 @@ class CustomButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade600.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            color: Color.fromARGB(150, 49, 111, 247),
+            spreadRadius: 3,
+            blurRadius: 5,
+            offset: Offset(0, 3), //to change position of shadow
           ),
         ],
         gradient: LinearGradient(

@@ -87,7 +87,7 @@ class _LoginFormState extends State<LoginForm> {
                           _emailController.text,
                           _passwordController.text,
                         );
-                    await Future.delayed(const Duration(seconds: 3));
+                    await Future.delayed(const Duration(seconds: 1));
                     // Get.to(() => HomeScreen());
                     Navigator.pushNamed(context, HomeScreen.routeName);
                   },

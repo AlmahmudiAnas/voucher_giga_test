@@ -13,10 +13,18 @@ class UserInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      width: size.width,
+      width: size.width * 0.95,
       height: size.height * 0.25,
       decoration: BoxDecoration(
         color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromARGB(150, 49, 111, 247),
+            spreadRadius: 3,
+            blurRadius: 5,
+            offset: Offset(0, 3), //to change position of shadow
+          ),
+        ],
         borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
       ),
