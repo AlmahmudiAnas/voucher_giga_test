@@ -19,13 +19,6 @@ class _VoucherDetailsState extends State<VoucherDetails> {
   VoucherProvider voucherProvider = VoucherProvider();
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //context.read<VoucherProvider>().getDevices();
-  }
-
-  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -65,7 +58,6 @@ class _VoucherDetailsState extends State<VoucherDetails> {
                         child: TextField(
                           style: TextStyle(
                             fontFamily: 'Digistyle',
-                            //color: Colors.green,
                             fontSize: 35,
                             fontWeight: FontWeight.bold,
                           ),
@@ -88,21 +80,6 @@ class _VoucherDetailsState extends State<VoucherDetails> {
                     ),
                   ),
                   SizedBox(height: size.height * 0.02),
-                  // DropdownButton(
-                  //   hint: Text('اختر الطابعة'),
-                  //   onChanged: (device) =>
-                  //       context.read<VoucherProvider>().deviceSelected(device),
-                  //   value: context.watch<VoucherProvider>().selectedDevice,
-                  //   items: context
-                  //       .watch<VoucherProvider>()
-                  //       .devices
-                  //       .map((e) => DropdownMenuItem(
-                  //             child: Text(e.name!),
-                  //             value: e,
-                  //           ))
-                  //       .toList(),
-                  // ),
-                  SizedBox(height: size.height * 0.1),
                   Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -110,26 +87,19 @@ class _VoucherDetailsState extends State<VoucherDetails> {
                         CustomButton(
                           text: 'تنفيد',
                           onPressed: () async {
-                            // context.read<VoucherProvider>().newVouchers(
-                            //     "quantity", int.parse(_voucherQuantity.text));
                             Provider.of<VoucherProvider>(context, listen: false)
                                 .voucherRequest
                                 .addEntries({
                               MapEntry(
                                   "quantity", int.parse(_voucherQuantity.text))
                             });
-                            print(voucherProvider.voucherRequest);
                             final box = await Hive.openBox('UserData');
                             final currentUser = box.get('current_user');
-                            //print(currentUser.token);
-                            await context
-                                .read<VoucherProvider>()
-                                .newVouchersMethod(
-                                    voucherProvider.voucherRequest,
-                                    currentUser.token);
-                            // voucherProvider.printVoucher();
+                            await context.read<VoucherProvider>().buyVouchers(
+                                voucherProvider.voucherRequest,
+                                currentUser.token);
                             context.read<VoucherProvider>().connectPrinter();
-                            //Navigator.pop(context);
+                            Navigator.pop(context);
                           },
                         ),
                         CustomButton(

@@ -7,10 +7,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:voucher_giga/Adapter/voucher_adapter.dart';
 import 'package:voucher_giga/Data/Get_Vouchers/get_voucher_db.dart';
 import 'package:voucher_giga/Data/New_Voucher/create_new_voucher_request.dart';
-import 'package:voucher_giga/Model/user_model.dart';
 import 'package:voucher_giga/Model/voucher_model.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -30,28 +30,14 @@ class VoucherProvider extends ChangeNotifier {
   List<Voucher> get vouchers => _vouchers;
   Map<String, dynamic> get voucherRequest => _voucherRequest;
   List<dynamic> get newVouchers => _newVouchers;
-  List colors = [
-    Colors.blue,
-    Colors.green,
-    Colors.red,
-    Colors.black,
-    Colors.accents,
-    Colors.amber,
-    Colors.teal,
-  ];
 
   Future<void> fetchVouchers(String token) async {
     try {
       final vouchersResponse = await _voucherService.getVouchers(token);
-      final vouchersData = vouchersResponse['data'] as List<dynamic>;
+      final vouchers = List<Voucher>.from(
+          vouchersResponse['data'].map((voucher) => Voucher.fromJson(voucher)));
 
-      final vouchers =
-          vouchersData.map((voucher) => Voucher.fromJson(voucher)).toList();
-
-      // Saving vouchers to local database
-      final box = await Hive.openBox('vouchers');
-
-      box.put('vouchers', vouchers);
+      await Hive.box('vouchers').put('vouchers', vouchers);
 
       _vouchers = vouchers;
       notifyListeners();
@@ -62,16 +48,13 @@ class VoucherProvider extends ChangeNotifier {
 
   Future<void> init() async {
     try {
-      // Initializing Hive
-      final appDocDir = await getApplicationDocumentsDirectory();
-      Hive.init(appDocDir.path);
-
-      // Registering VoucherAdapter for serialization/deserialization
+      // Initialize Hive and register adapter
+      await Hive.initFlutter();
       Hive.registerAdapter(VoucherAdapter());
 
-      // Opening the vouchers box and reading the saved vouchers
-      final box = await Hive.openBox('vouchers');
-      final vouchers = box.get('vouchers', defaultValue: []) as List<Voucher>;
+      // Open the vouchers box and read saved vouchers
+      final box = await Hive.openBox<Voucher>('vouchers');
+      final vouchers = box.values.toList();
 
       _vouchers = vouchers;
       notifyListeners();
@@ -83,18 +66,25 @@ class VoucherProvider extends ChangeNotifier {
   Future<String> getToken() async {
     final userBox = await Hive.openBox('UserData');
     final currentUser = userBox.get('current_user');
-    print(currentUser);
+
+    if (currentUser == null) {
+      throw Exception('No user found');
+    }
+
     return currentUser.token;
   }
 
-  Future newVouchersMethod(
-      Map<String, dynamic> newVoucherMap, String token) async {
-    final response =
-        await _newVoucherService.buyVouchers(voucherRequest, token);
-    _newVouchers = response;
-    // ignore: avoid_print
-    print("This is the final response ==> $_newVouchers");
-    notifyListeners();
+  Future<void> buyVouchers(
+      Map<String, dynamic> voucherRequest, String token) async {
+    try {
+      final response =
+          await _newVoucherService.buyVouchers(voucherRequest, token);
+      _newVouchers = response;
+      print('Response: $_newVouchers');
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
   }
 
   void connectPrinter() async {
