@@ -14,7 +14,7 @@ class VoucherDetails extends StatefulWidget {
 }
 
 class _VoucherDetailsState extends State<VoucherDetails> {
-  TextEditingController _voucherQuantity = TextEditingController();
+  final TextEditingController _voucherQuantity = TextEditingController();
   AuthProvider authProvider = AuthProvider();
   VoucherProvider voucherProvider = VoucherProvider();
 
@@ -96,8 +96,9 @@ class _VoucherDetailsState extends State<VoucherDetails> {
                             final box = await Hive.openBox('UserData');
                             final currentUser = box.get('current_user');
                             await context.read<VoucherProvider>().buyVouchers(
-                                voucherProvider.voucherRequest,
-                                currentUser.token);
+                                  voucherProvider.voucherRequest,
+                                  currentUser.token,
+                                );
                             context.read<VoucherProvider>().connectPrinter();
                             Navigator.pop(context);
                           },
