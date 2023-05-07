@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:voucher_giga/My_Widgets/user_info_card.dart';
 import 'package:voucher_giga/My_Widgets/voucher_list.dart';
 import 'package:voucher_giga/View/Home_Screen/voucher_card.dart';
-import 'package:voucher_giga/View/Voucher_Qyantity/voucher_details.dart';
+import 'package:voucher_giga/View/Voucher_Qyantity/voucher_qantity.dart';
 import 'package:voucher_giga/View_Model/auth_provider.dart';
 import 'package:voucher_giga/View_Model/voucher_provider.dart';
 
@@ -62,19 +62,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount:
                           context.watch<VoucherProvider>().vouchers.length,
                       itemBuilder: (context, index) {
-                        return InkWell(
-                          onTap: () {
-                            Provider.of<VoucherProvider>(context, listen: false)
-                                .voucherRequest
-                                .addEntries({
-                              MapEntry("voucher", vouchers[index].id),
-                            });
-                            Navigator.pushNamed(
-                                context, VoucherDetails.routeName);
-                          },
-                          child: VoucherList(
-                            voucher: vouchers[index],
-                          ),
+                        return Column(
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Provider.of<VoucherProvider>(context,
+                                        listen: false)
+                                    .voucherRequest
+                                    .addEntries({
+                                  MapEntry("voucher", vouchers[index].id),
+                                });
+                                Navigator.pushNamed(
+                                    context, VoucherDetails.routeName);
+                              },
+                              child: VoucherList(
+                                voucher: vouchers[index],
+                              ),
+                            ),
+                            SizedBox(height: size.height * 0.02),
+                          ],
                         );
                       },
                     ),

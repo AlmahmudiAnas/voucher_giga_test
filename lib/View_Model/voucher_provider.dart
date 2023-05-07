@@ -7,12 +7,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:voucher_giga/Adapter/voucher_adapter.dart';
 import 'package:voucher_giga/Data/Get_Vouchers/get_voucher_db.dart';
 import 'package:voucher_giga/Data/New_Voucher/create_new_voucher_request.dart';
+import 'package:voucher_giga/Model/user_model.dart';
 import 'package:voucher_giga/Model/voucher_model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:voucher_giga/View_Model/auth_provider.dart';
 
 class VoucherProvider extends ChangeNotifier {
   List<Voucher> _vouchers = [];
@@ -34,10 +35,15 @@ class VoucherProvider extends ChangeNotifier {
   Future<void> fetchVouchers(String token) async {
     try {
       final vouchersResponse = await _voucherService.getVouchers(token);
-      final vouchers = List<Voucher>.from(
-          vouchersResponse['data'].map((voucher) => Voucher.fromJson(voucher)));
+      final vouchersData = vouchersResponse['data'] as List<dynamic>;
 
-      await Hive.box('vouchers').put('vouchers', vouchers);
+      final vouchers =
+          vouchersData.map((voucher) => Voucher.fromJson(voucher)).toList();
+
+      // Saving vouchers to local database
+      final box = await Hive.openBox('vouchers');
+
+      box.put('vouchers', vouchers);
 
       _vouchers = vouchers;
       notifyListeners();
@@ -48,13 +54,16 @@ class VoucherProvider extends ChangeNotifier {
 
   Future<void> init() async {
     try {
-      // Initialize Hive and register adapter
-      await Hive.initFlutter();
+      // Initializing Hive
+      final appDocDir = await getApplicationDocumentsDirectory();
+      Hive.init(appDocDir.path);
+
+      // Registering VoucherAdapter for serialization/deserialization
       Hive.registerAdapter(VoucherAdapter());
 
-      // Open the vouchers box and read saved vouchers
-      final box = await Hive.openBox<Voucher>('vouchers');
-      final vouchers = box.values.toList();
+      // Opening the vouchers box and reading the saved vouchers
+      final box = await Hive.openBox('vouchers');
+      final vouchers = box.get('vouchers', defaultValue: []) as List<Voucher>;
 
       _vouchers = vouchers;
       notifyListeners();
@@ -66,25 +75,22 @@ class VoucherProvider extends ChangeNotifier {
   Future<String> getToken() async {
     final userBox = await Hive.openBox('UserData');
     final currentUser = userBox.get('current_user');
-
-    if (currentUser == null) {
-      throw Exception('No user found');
-    }
-
+    print(currentUser);
     return currentUser.token;
   }
 
-  Future<void> buyVouchers(
-      Map<String, dynamic> voucherRequest, String token) async {
-    try {
-      final response =
-          await _newVoucherService.buyVouchers(voucherRequest, token);
-      _newVouchers = response;
-      print('Response: $_newVouchers');
-      notifyListeners();
-    } catch (error) {
-      throw error;
+  Future newVouchersMethod(
+      Map<String, dynamic> newVoucherMap, String token) async {
+    final response =
+        await _newVoucherService.buyVouchers(voucherRequest, token);
+    _newVouchers = response;
+    // ignore: avoid_print
+    print("This is the New vouchers ==> $_newVouchers");
+    var authProvider = AuthProvider();
+    for (var voucher in _newVouchers) {
+      print(voucher['code']);
     }
+    notifyListeners();
   }
 
   void connectPrinter() async {
@@ -109,16 +115,18 @@ class VoucherProvider extends ChangeNotifier {
       final cost = entry['cost'];
       final upload = entry['upload_speed'];
       final download = entry['download_speed'];
-      final qouta = entry['qouta_limit'];
-      final line = '\x1B\x21\x00Name: $name\x1B\x21\x30\n\n';
-      final codeLine = '\x1B\x21\x30\n\x1B\x21\x00Code: $code';
-      final validityLine = '\x1B\x21\x30\n\x1B\x21\x00Time: $validity';
-      final costLine = '\x1B\x21\x30\n\x1B\x21\x00Cost: $cost';
-      final qoutaLine = '\x1B\x21\x30\n\x1B\x21\x00Qouta: $qouta';
-      final dSpeed = '\x1B\x21\x30\n\x1B\x21\x00Download speed: $download';
-      final uSpeed = '\x1B\x21\x30\n\x1B\x21\x00Upload: $upload';
+      final qouta = entry['quota_limit'];
+      final line = '\t\t\t\x1B\x21\x30\x1B\x21\x00 $name';
+      final codeLine = '\t\t\t\x1B\x21\x30\n\x1B\x21\x00 $code\n';
+      final validityLine = 'Time:\x1B\x21\x30\n\x1B\x21\x00 $validity';
+      final costLine = '\t\t\t\x1B\x21\x30\n\x1B\x21\x00 $cost';
+      final qoutaLine = '\t\t\t\x1B\x21\x30\n\x1B\x21\x00 $qouta';
+      final dSpeed = '\t\t\t\x1B\x21\x30\n\x1B\x21\x00 $download';
+      final uSpeed = 'Upload:\x1B\x21\x30\n\x1B\x21\x00 $upload';
+      final data =
+          '\n     $line\n     $codeLine\n   $costLine     $qoutaLine\n UP TO $dSpeed\n';
 
-      final bytes = utf8.encode(line);
+      final bytes = utf8.encode(data);
       final Uint8List uint8list = Uint8List.fromList(bytes);
       connection.output.add(uint8list);
     }

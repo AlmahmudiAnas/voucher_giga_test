@@ -33,59 +33,62 @@ class VoucherList extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Container(
-          //   width: size.width * 0.04,
-          //   height: size.height,
-          //   decoration: BoxDecoration(
-          //     color: voucherProvider.colors[1],
-          //     borderRadius: BorderRadius.only(
-          //         topLeft: Radius.circular(20),
-          //         bottomLeft: Radius.circular(20)),
-          //   ),
-          // ),
-          SizedBox(width: size.width * 0.1),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  voucher.name,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Container(
+            //   width: size.width * 0.04,
+            //   height: size.height,
+            //   decoration: BoxDecoration(
+            //     color: voucherProvider.colors[1],
+            //     borderRadius: BorderRadius.only(
+            //         topLeft: Radius.circular(20),
+            //         bottomLeft: Radius.circular(20)),
+            //   ),
+            // ),
+            SizedBox(width: size.width * 0.04),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    voucher.name,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                SizedBox(height: size.height * 0.01),
-                Text(
-                  voucher.validity,
-                  style: TextStyle(
-                    color: Colors.white,
+                  SizedBox(height: size.height * 0.01),
+                  Text(
+                    voucher.validity,
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          SizedBox(width: size.width * 0.42),
-          Text(
-            voucher.quotaLimit,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
+            SizedBox(width: size.width * 0.35),
+            Text(
+              voucher.quotaLimit,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: size.width * 0.04),
+            Icon(
+              Icons.arrow_forward_ios,
               color: Colors.white,
             ),
-          ),
-          SizedBox(width: size.width * 0.04),
-          Icon(
-            Icons.arrow_forward_ios,
-            color: Colors.white,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

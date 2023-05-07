@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:voucher_giga/Model/user_model.dart';
@@ -17,25 +19,35 @@ Future<Map<String, dynamic>?> loginAPI(String email, String password) async {
     },
   );
   if (response.statusCode == 200) {
-    print("login success");
-    final jsonResponse = json.decode(response.body);
-    if (jsonResponse['msg'] == null) {
-      token = jsonResponse['data']['token'];
-      final userProfile =
-          await http.get(Uri.parse('$url/users/profile'), headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-        'content-type': 'application/json',
-      });
-      final userProfileDecoded = json.decode(userProfile.body);
-      // print("this is the user profile =====> ${userProfile.body}");
-      // print(response.body);
-      // print("this is the jsonResponse ====> $jsonResponse");
-      //getVouchers(token);
-      return saveUserDataToCache(jsonResponse, token, userProfileDecoded);
-    } else {
-      print(response.statusCode);
-      return null;
+    try {
+      print("login success");
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['msg'] == null) {
+        token = jsonResponse['data']['token'];
+        final userProfile =
+            await http.get(Uri.parse('$url/users/profile'), headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+          'content-type': 'application/json',
+        });
+        final userProfileDecoded = json.decode(userProfile.body);
+        // print("this is the user profile =====> ${userProfile.body}");
+        // print(response.body);
+        // print("this is the jsonResponse ====> $jsonResponse");
+        //getVouchers(token);
+        return saveUserDataToCache(jsonResponse, token, userProfileDecoded);
+      } else {
+        print(response.statusCode);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      Fluttertoast.showToast(
+        msg: 'Email or password is incorrect',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.red,
+      );
     }
   }
 }

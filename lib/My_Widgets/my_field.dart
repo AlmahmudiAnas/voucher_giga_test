@@ -8,12 +8,14 @@ class MyField extends StatelessWidget {
     required this.controller,
     required this.text,
     required this.onChanged,
+    required this.isPassword,
   });
 
   final AuthProvider authProvider;
   final TextEditingController controller;
   final String text;
   final Function(String) onChanged;
+  final bool isPassword;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class MyField extends StatelessWidget {
         }
         return null;
       },
+      obscureText: isPassword,
       keyboardType: TextInputType.emailAddress,
       controller: controller,
       decoration: InputDecoration(

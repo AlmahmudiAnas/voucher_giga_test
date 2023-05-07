@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:voucher_giga/My_Widgets/my_button.dart';
+import 'package:voucher_giga/View/Voucher_Details/voucher_details.dart';
 import 'package:voucher_giga/View_Model/auth_provider.dart';
 import 'package:voucher_giga/View_Model/voucher_provider.dart';
 
@@ -95,12 +96,15 @@ class _VoucherDetailsState extends State<VoucherDetails> {
                             });
                             final box = await Hive.openBox('UserData');
                             final currentUser = box.get('current_user');
-                            await context.read<VoucherProvider>().buyVouchers(
+                            await context
+                                .read<VoucherProvider>()
+                                .newVouchersMethod(
                                   voucherProvider.voucherRequest,
                                   currentUser.token,
                                 );
-                            context.read<VoucherProvider>().connectPrinter();
-                            Navigator.pop(context);
+
+                            Navigator.pushNamed(
+                                context, NewVoucherDetails.routeName);
                           },
                         ),
                         CustomButton(

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:voucher_giga/View_Model/voucher_provider.dart';
 import 'Components/login_form.dart';
 
 class LoginScreen extends StatefulWidget {
